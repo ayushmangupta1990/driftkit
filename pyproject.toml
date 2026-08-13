@@ -1,0 +1,72 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "driftkit"
+version = "0.1.0"
+description = "Correct, dependency-light population drift metrics for tabular models: PSI, CSI, WOE/IV and calibration drift."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Ayushman Gupta" }]
+keywords = ["psi", "csi", "drift", "model-monitoring", "credit-risk", "woe", "scorecard"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Typing :: Typed",
+]
+dependencies = [
+    "numpy>=1.23",
+    "pandas>=1.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "hypothesis>=6.90",
+    "mypy>=1.8",
+    "ruff>=0.6",
+    "pandas-stubs",
+]
+
+[project.urls]
+Homepage = "https://github.com/ayushmangupta/driftkit"
+Issues = "https://github.com/ayushmangupta/driftkit/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/driftkit"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF", "N", "PT"]
+
+[tool.ruff.lint.per-file-ignores]
+# `X` for the feature matrix is the scikit-learn transformer convention; the
+# encoder is meant to be a drop-in for a Pipeline, so it matches sklearn rather
+# than PEP 8 here.
+"src/driftkit/woe.py" = ["N803"]
+"tests/test_woe.py" = ["N806"]
+
+[tool.mypy]
+strict = true
+files = ["src/driftkit"]
+
+[[tool.mypy.overrides]]
+module = "pandas.*"
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
