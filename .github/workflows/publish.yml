@@ -1,0 +1,76 @@
+name: Publish
+
+# Publishes to PyPI via Trusted Publishing (OIDC). No API token is stored
+# anywhere: PyPI verifies a short-lived identity issued by GitHub Actions for
+# this specific repository, workflow and environment.
+#
+# Triggered by publishing a GitHub Release, so the release notes and the PyPI
+# version are always created by the same action.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build distributions
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build tooling
+        run: pip install build twine
+
+      - name: Verify the tag matches the package version
+        # Guards against tagging v0.2.0 while pyproject still says 0.1.0.
+        # A PyPI version can never be reused, so catching this before upload
+        # rather than after is the whole point.
+        if: github.event_name == 'release'
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          echo "tag=$TAG package=$VERSION"
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "::error::Tag $TAG does not match project version $VERSION"
+            exit 1
+          fi
+
+      - name: Build
+        run: python -m build
+
+      - name: Check metadata
+        run: twine check dist/*
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: distributions
+          path: dist/
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+
+    # Must match the environment configured on the PyPI publisher exactly.
+    environment:
+      name: pypi
+      url: https://pypi.org/p/driftkit
+
+    permissions:
+      # Required for OIDC. This is what replaces the API token.
+      id-token: write
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: distributions
+          path: dist/
+
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@release/v1
