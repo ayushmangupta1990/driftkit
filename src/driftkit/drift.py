@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 
 from .binning import BinSpec, fit_bins
@@ -71,8 +73,8 @@ def interpret_psi(value: float) -> str:
 
 
 def psi_from_counts(
-    expected_counts: np.ndarray,
-    actual_counts: np.ndarray,
+    expected_counts: npt.NDArray[Any],
+    actual_counts: npt.NDArray[Any],
     *,
     alpha: float = 0.5,
     labels: tuple[str, ...] | None = None,
@@ -145,8 +147,8 @@ def psi_from_counts(
 
 
 def psi(
-    expected: pd.Series | np.ndarray | list[object],
-    actual: pd.Series | np.ndarray | list[object],
+    expected: pd.Series | npt.NDArray[Any] | list[object],
+    actual: pd.Series | npt.NDArray[Any] | list[object],
     *,
     n_bins: int = 10,
     alpha: float = 0.5,
@@ -186,10 +188,10 @@ def psi(
 
 
 def csi(
-    expected: pd.Series | np.ndarray | list[object],
-    actual: pd.Series | np.ndarray | list[object],
+    expected: pd.Series | npt.NDArray[Any] | list[object],
+    actual: pd.Series | npt.NDArray[Any] | list[object],
     *,
-    points: np.ndarray | pd.Series | None = None,
+    points: npt.NDArray[Any] | pd.Series | None = None,
     n_bins: int = 10,
     alpha: float = 0.5,
     bins: BinSpec | None = None,

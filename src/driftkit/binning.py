@@ -14,9 +14,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from itertools import pairwise
-from typing import Literal
+from typing import Any, Literal
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 
 __all__ = ["MISSING_LABEL", "BinSpec", "fit_bins"]
@@ -27,7 +28,7 @@ MISSING_LABEL = "__missing__"
 Strategy = Literal["quantile", "uniform"]
 
 
-def _as_1d_array(x: pd.Series | np.ndarray | list[object]) -> np.ndarray:
+def _as_1d_array(x: pd.Series | npt.NDArray[Any] | list[object]) -> npt.NDArray[Any]:
     """Return `x` as a 1-D numpy array without copying when avoidable."""
     if isinstance(x, pd.Series):
         return x.to_numpy()
@@ -54,7 +55,7 @@ class BinSpec:
     """
 
     kind: Literal["numeric", "categorical"]
-    edges: np.ndarray | None = None
+    edges: npt.NDArray[Any] | None = None
     categories: tuple[object, ...] | None = None
     labels: tuple[str, ...] = field(default=())
 
@@ -68,7 +69,7 @@ class BinSpec:
         """Integer code of the missing-value bin."""
         return self.n_bins - 1
 
-    def assign(self, x: pd.Series | np.ndarray | list[object]) -> np.ndarray:
+    def assign(self, x: pd.Series | npt.NDArray[Any] | list[object]) -> npt.NDArray[Any]:
         """Map values to integer bin codes in ``[0, n_bins)``.
 
         NaN, None and — for categorical specs — any category unseen in the
@@ -84,9 +85,9 @@ class BinSpec:
             missing = np.isnan(values)
             # np.digitize with the -inf/+inf sentinels yields codes in
             # [1, len(edges)-1]; shift down so codes start at 0.
-            numeric_codes: np.ndarray = np.digitize(values, self.edges[1:-1], right=False).astype(
-                np.int64
-            )
+            numeric_codes: npt.NDArray[Any] = np.digitize(
+                values, self.edges[1:-1], right=False
+            ).astype(np.int64)
             numeric_codes[missing] = self.missing_code
             return numeric_codes
 
@@ -103,14 +104,14 @@ class BinSpec:
                 codes[position] = mapped
         return codes
 
-    def counts(self, x: pd.Series | np.ndarray | list[object]) -> np.ndarray:
+    def counts(self, x: pd.Series | npt.NDArray[Any] | list[object]) -> npt.NDArray[Any]:
         """Return the per-bin count vector for `x`."""
         codes = self.assign(x)
         return np.bincount(codes, minlength=self.n_bins).astype(np.float64)
 
 
 def fit_bins(
-    x: pd.Series | np.ndarray | list[object],
+    x: pd.Series | npt.NDArray[Any] | list[object],
     n_bins: int = 10,
     *,
     strategy: Strategy = "quantile",

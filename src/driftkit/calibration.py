@@ -11,8 +11,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from itertools import pairwise
+from typing import Any
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 
 __all__ = [
@@ -24,9 +26,9 @@ __all__ = [
 
 
 def _validate_inputs(
-    y_true: pd.Series | np.ndarray | list[int],
-    y_prob: pd.Series | np.ndarray | list[float],
-) -> tuple[np.ndarray, np.ndarray]:
+    y_true: pd.Series | npt.NDArray[Any] | list[int],
+    y_prob: pd.Series | npt.NDArray[Any] | list[float],
+) -> tuple[npt.NDArray[Any], npt.NDArray[Any]]:
     truth = np.asarray(y_true, dtype=np.float64)
     prob = np.asarray(y_prob, dtype=np.float64)
 
@@ -90,8 +92,8 @@ class CalibrationReport:
 
 
 def brier_decomposition(
-    y_true: pd.Series | np.ndarray | list[int],
-    y_prob: pd.Series | np.ndarray | list[float],
+    y_true: pd.Series | npt.NDArray[Any] | list[int],
+    y_prob: pd.Series | npt.NDArray[Any] | list[float],
     *,
     n_bins: int = 10,
 ) -> tuple[float, float, float]:
@@ -108,8 +110,8 @@ def brier_decomposition(
 
 
 def expected_calibration_error(
-    y_true: pd.Series | np.ndarray | list[int],
-    y_prob: pd.Series | np.ndarray | list[float],
+    y_true: pd.Series | npt.NDArray[Any] | list[int],
+    y_prob: pd.Series | npt.NDArray[Any] | list[float],
     *,
     n_bins: int = 10,
 ) -> float:
@@ -118,8 +120,8 @@ def expected_calibration_error(
 
 
 def calibration_report(
-    y_true: pd.Series | np.ndarray | list[int],
-    y_prob: pd.Series | np.ndarray | list[float],
+    y_true: pd.Series | npt.NDArray[Any] | list[int],
+    y_prob: pd.Series | npt.NDArray[Any] | list[float],
     *,
     n_bins: int = 10,
 ) -> CalibrationReport:

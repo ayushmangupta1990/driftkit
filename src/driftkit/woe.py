@@ -8,7 +8,10 @@ result stays monotone, explainable and directly convertible to points.
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 
 from .binning import BinSpec, fit_bins
@@ -16,7 +19,7 @@ from .binning import BinSpec, fit_bins
 __all__ = ["WOEEncoder", "information_value"]
 
 
-def _validate_binary_target(y: pd.Series | np.ndarray | list[int]) -> np.ndarray:
+def _validate_binary_target(y: pd.Series | npt.NDArray[Any] | list[int]) -> npt.NDArray[Any]:
     target = np.asarray(y)
     if target.ndim != 1:
         raise ValueError(f"y must be 1-D, got shape {target.shape}")
@@ -29,8 +32,8 @@ def _validate_binary_target(y: pd.Series | np.ndarray | list[int]) -> np.ndarray
 
 
 def information_value(
-    x: pd.Series | np.ndarray | list[object],
-    y: pd.Series | np.ndarray | list[int],
+    x: pd.Series | npt.NDArray[Any] | list[object],
+    y: pd.Series | npt.NDArray[Any] | list[int],
     *,
     n_bins: int = 10,
     alpha: float = 0.5,
@@ -85,11 +88,11 @@ class WOEEncoder:
         self.n_bins = n_bins
         self.alpha = alpha
         self.bin_specs_: dict[str, BinSpec] = {}
-        self.woe_maps_: dict[str, np.ndarray] = {}
+        self.woe_maps_: dict[str, npt.NDArray[Any]] = {}
         self.information_values_: dict[str, float] = {}
         self._fitted = False
 
-    def fit(self, X: pd.DataFrame, y: pd.Series | np.ndarray | list[int]) -> WOEEncoder:
+    def fit(self, X: pd.DataFrame, y: pd.Series | npt.NDArray[Any] | list[int]) -> WOEEncoder:
         """Learn bins and WOE values from the training sample."""
         if not isinstance(X, pd.DataFrame):
             raise TypeError(f"X must be a pandas DataFrame, got {type(X).__name__}")
@@ -142,11 +145,13 @@ class WOEEncoder:
         }
         return pd.DataFrame(encoded, index=X.index)
 
-    def fit_transform(self, X: pd.DataFrame, y: pd.Series | np.ndarray | list[int]) -> pd.DataFrame:
+    def fit_transform(
+        self, X: pd.DataFrame, y: pd.Series | npt.NDArray[Any] | list[int]
+    ) -> pd.DataFrame:
         """Fit on `X`, `y` and return the encoded frame."""
         return self.fit(X, y).transform(X)
 
-    def get_feature_names_out(self, input_features: list[str] | None = None) -> np.ndarray:
+    def get_feature_names_out(self, input_features: list[str] | None = None) -> npt.NDArray[Any]:
         """Output column names, for scikit-learn pipeline introspection."""
         self._check_fitted()
         return np.asarray(list(self.bin_specs_), dtype=object)
