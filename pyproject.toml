@@ -45,8 +45,8 @@ examples = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ayushmangupta/driftkit"
-Issues = "https://github.com/ayushmangupta/driftkit/issues"
+Homepage = "https://github.com/ayushmangupta1990/driftkit"
+Issues = "https://github.com/ayushmangupta1990/driftkit/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/driftkit"]
