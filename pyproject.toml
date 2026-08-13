@@ -9,7 +9,7 @@ description = "Correct, dependency-light population drift metrics for tabular mo
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "Ayushman Gupta" }]
+authors = [{ name = "Ayushman Gupta", email = "ayushmangupta1990@gmail.com" }]
 keywords = ["psi", "csi", "drift", "model-monitoring", "credit-risk", "woe", "scorecard"]
 classifiers = [
     "Development Status :: 4 - Beta",
