@@ -19,6 +19,7 @@ from .calibration import (
     calibration_report,
     expected_calibration_error,
 )
+from .datasets import make_credit_data
 from .drift import DriftResult, csi, interpret_psi, psi, psi_from_counts
 from .report import MonitoringReport, monitor
 from .woe import WOEEncoder, information_value
@@ -40,6 +41,7 @@ __all__ = [
     "fit_bins",
     "information_value",
     "interpret_psi",
+    "make_credit_data",
     "monitor",
     "psi",
     "psi_from_counts",

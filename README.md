@@ -130,6 +130,39 @@ report.table  # per-bin reliability diagram data
 
 `reliability - resolution + uncertainty ≈ brier` (Murphy's decomposition). The `uncertainty` term is base-rate variance — a property of the sample, not the model, and the reason Brier scores move when the base rate moves even if nothing about the model changed.
 
+## Worked example
+
+[`examples/credit_monitoring.ipynb`](examples/credit_monitoring.ipynb) runs a full monitoring pack on a synthetic credit scorecard through a simulated downturn. It ends on the case that motivates the library:
+
+| Question | Metric | Reference | Current |
+| --- | --- | ---: | ---: |
+| Still rank-orders? | AUC | 0.7769 | **0.7789** |
+| Probabilities still right? | ECE | 0.0031 | **0.0653** |
+
+**AUC does not move. Calibration degrades 21×.** Discrimination and calibration fail independently, and a dashboard carrying AUC alone would have called this model healthy while it under-predicted the portfolio's default rate by 6.5 percentage points.
+
+The correct action there is recalibration, not retraining — the learned relationship is intact, only the intercept is stale.
+
+```python
+from driftkit import make_credit_data, monitor
+
+reference = make_credit_data(40_000, seed=0)
+current = make_credit_data(40_000, drift=True, seed=1)
+
+monitor(reference, current).summary
+```
+
+| feature | psi | interpretation |
+| --- | ---: | --- |
+| debt_to_income | 1.0821 | significant shift |
+| revol_util | 0.9065 | significant shift |
+| fico_score | 0.5144 | significant shift |
+| text_sentiment | 0.4454 | significant shift |
+| delinq_2yrs | 0.1329 | moderate shift |
+| age | 0.0003 | stable |
+
+`age` is generated identically in both scenarios — it's the control. A metric that flags it is producing noise.
+
 ## On the interpretation bands
 
 `interpret_psi` uses the conventional retail-credit bands: `<0.10` stable, `0.10–0.25` moderate, `>0.25` significant.
@@ -148,6 +181,7 @@ These are industry convention, not a hypothesis test. They carry no sample-size 
 | `WOEEncoder` | Weight of Evidence transformer |
 | `information_value(x, y)` | IV of one feature |
 | `calibration_report(y_true, y_prob)` | Brier, ECE, Murphy decomposition |
+| `make_credit_data(n, drift=...)` | Synthetic credit portfolio, for examples and tests |
 
 ## Development
 
