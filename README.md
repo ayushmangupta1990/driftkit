@@ -1,7 +1,8 @@
 # driftkit
 
+[![PyPI](https://img.shields.io/pypi/v/driftkit)](https://pypi.org/project/driftkit/)
 [![CI](https://github.com/ayushmangupta1990/driftkit/actions/workflows/ci.yml/badge.svg)](https://github.com/ayushmangupta1990/driftkit/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://github.com/ayushmangupta1990/driftkit)
+[![Python](https://img.shields.io/pypi/pyversions/driftkit)](https://pypi.org/project/driftkit/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 Correct, dependency-light stability metrics for tabular models — PSI, CSI, WOE/IV and calibration drift.
